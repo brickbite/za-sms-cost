@@ -85,6 +85,33 @@ class TwilioSMSRouter(SMSRouter):
             "route_key": "twilio",
             "route_message_key": message.sid}
 
+    def get_sms_cost(self, sms_sid):
+        """Get cost of a single SMS message."""
+
+        logger.debug("==== get_sms_cost: getting cost of SMS message of %s from Twilio", sms_sid)
+
+        client = twilio.rest.TwilioRestClient(
+            self._account_sid,
+            self._auth_token)
+
+        try:
+            message = client.messages(sms_sid).fetch()
+        except twilio.TwilioRestException as error:
+            # If Twilio returns an HTTP response error, this means that
+            # Twilio is unable to process your request and thus you will
+            # not be charged - http://bit.ly/1NgPf2c
+            if error.msg.strip().startswith("21614:"):
+                raise ValueError("not a valid mobile number")
+            else:
+                raise
+
+        logger.info("==== get_sms_cost: twilio message: %r", message)
+
+        return {
+            "state": message.status,
+            "cost": message.price,
+            "cost_currency": message.price_unit}
+
 
 class SequentialSMSRouter(SMSRouter):
     """Route SMS messages by sequential condition-matching.

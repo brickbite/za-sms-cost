@@ -607,6 +607,7 @@ class SMSMessageMedia(object):
                 "value": self.sms_message.cost_value
             },
             "cost_currency": self.sms_message.cost_currency,
+            "sid": self.sms_message.sid,
             ############
             "created_when": self.sms_message.created_when,
             "sent_when": self.sms_message.sent_when,
