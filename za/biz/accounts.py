@@ -593,9 +593,12 @@ class SMSMessage(biz.DomainBase):
         if error is None:
             # send the SMS message asynchronously via celery
             from za.biz.tasks.sms_message import SendSMSMessageRule
+            from za.biz.tasks.sms_message import RetrieveSMSMessageRule
             biz.commit()
             sms_message_rule = SendSMSMessageRule()
             sms_message_rule.delay(message.id)
+            sms_retrieve_cost_rule = RetrieveSMSMessageRule()
+            sms_retrieve_cost_rule.delay(message.id)
         else:
             message.error = error.name
             message.state = SMSMessageState.FINAL_FAILED.name
