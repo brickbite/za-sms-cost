@@ -29,6 +29,7 @@ class Rule(celery.Task):
 
     def run(self, target_id):
         target = biz.accounts.SMSMessage.from_id(target_id)
+        logger.info("checking %s (in run)", target)
         if self.check(target):
             logger.info("%s check true; firing now (in run)", self)
             self.execute(target)
