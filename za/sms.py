@@ -158,6 +158,8 @@ class SequentialSMSRouter(SMSRouter):
             raise ValueError("no sms_sid provided")
 
         for (condition, router) in self._routes:
+            logger.debug("SequentialRouter: (condition, router) in self._routes: %s",
+                (condition, router))
             if self._route_matches(condition, recipient):
                 logger.debug(
                     "routing message to %s through %s",
@@ -170,7 +172,8 @@ class SequentialSMSRouter(SMSRouter):
     
     def _route_matches(self, condition, recipient):
         """Return `True` iff the recipient meets the specified condition."""
-
+        logger.debug("SequentialRouter: _route_matches: %s, %s, %s",
+            self, condition, recipient)
         if condition is None:
             return True
         elif isinstance(condition, basestring):
