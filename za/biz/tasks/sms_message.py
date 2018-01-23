@@ -168,6 +168,7 @@ class RetrieveSMSMessageRule(biz.tasks.Rule):
         logger.debug("RetrieveSMS: router is: %s", self._router)
 
     def check(self, message):
+        logger.debug("RetrieveSMS: router is: %s", self._router)
         logger.debug("RetrieveSMS: check: %s", message.cost_value)
         logger.debug("RetrieveSMS: check: message is: %s", message)
         logger.debug("RetrieveSMS: self is: %s", self)

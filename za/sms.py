@@ -148,6 +148,25 @@ class SequentialSMSRouter(SMSRouter):
                 return router.send_sms(recipient, body)
 
         raise RuntimeError("no matching route for SMS recipient")
+
+    def get_sms_cost(self, sms_sid):
+        """Route a single SMS message's cost retrieval."""
+        logger.debug("SequentialRouter: get_sms_cost: self._routes is: %s",
+            self._routes)
+
+        if sms_sid is None:
+            raise ValueError("no sms_sid provided")
+
+        for (condition, router) in self._routes:
+            if self._route_matches(condition, recipient):
+                logger.debug(
+                    "routing message to %s through %s",
+                    recipient,
+                    router)
+
+                return router.send_sms(recipient, body)
+
+        raise RuntimeError("no matching route for SMS recipient")
     
     def _route_matches(self, condition, recipient):
         """Return `True` iff the recipient meets the specified condition."""
