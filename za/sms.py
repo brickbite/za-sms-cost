@@ -106,10 +106,7 @@ class TwilioSMSRouter(SMSRouter):
 
         logger.info("==== get_sms_cost: twilio message: %r", message)
 
-        return {
-            "state": message.status,
-            "cost": message.price,
-            "cost_currency": message.price_unit}
+        return message
 
 
 class SequentialSMSRouter(SMSRouter):

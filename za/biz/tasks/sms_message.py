@@ -183,17 +183,17 @@ class RetrieveSMSMessageRule(biz.tasks.Rule):
             logger.info(
                 "retrieving SMS message cost of sid: %s",
                 message_sid)
-            cost_info = self._router.get_sms_cost(
+            msg_w_cost_info = self._router.get_sms_cost(
                 message_sid)
         except:
             logger.exception("error while retrieving SMS")
 
             # message.update(state=SMSMessageState.FINAL_FAILED)
         else:
-            logger.info("retrieved SMS cost; cost info: %s", cost_info)
+            logger.info("retrieved SMS cost; cost info: %s", msg_w_cost_info)
 
-            message.cost_value = cost_info.price
-            message.cost_currency = cost_info.price_unit
-            message.update(state=route_info["state"], force_report=False)
+            message.cost_value = msg_w_cost_info.price
+            message.cost_currency = msg_w_cost_info.price_unit
+            message.update(force_report=False)
 
         biz.g.session.flush()
