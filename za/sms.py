@@ -95,9 +95,8 @@ class TwilioSMSRouter(SMSRouter):
             self._auth_token)
 
         try:
-            logger.debug("==== client.messages: %s", client.msg)
             logger.debug("==== client.messages: %s", client.messages)
-            message = client.msg(sms_sid).fetch()
+            message = client.messages.fetch(sms_sid)
         except twilio.TwilioRestException as error:
             logger.debug("==== error: %s", error)
             if error.msg.strip().startswith("21614:"):
