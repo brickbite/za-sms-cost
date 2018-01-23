@@ -182,7 +182,8 @@ class RetrieveSMSMessageRule(biz.tasks.Rule):
         except:
             logger.exception("error while retrieving SMS")
         else:
-            logger.info("retrieved SMS cost; cost info: %s", msg_w_cost_info)
+            logger.info("retrieved SMS cost; cost info: %s %s",
+                msg_w_cost_info.price_unit, msg_w_cost_info.price)
 
             message.cost_value = msg_w_cost_info.price
             message.cost_currency = msg_w_cost_info.price_unit
