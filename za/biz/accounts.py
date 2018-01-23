@@ -495,7 +495,7 @@ class SMSMessage(biz.DomainBase):
     ############ ADDING for cost
     cost_value = sa.Column(sa.Numeric)
     cost_currency = sa.Column(sa.String)
-    sid = sa.Column(sa.String)
+    sms_sid = sa.Column(sa.String)
     ############
     template_name = sa.Column(sa.String)
     payment_id = sa.Column(sa.Integer, sa.ForeignKey("payments.id"))
