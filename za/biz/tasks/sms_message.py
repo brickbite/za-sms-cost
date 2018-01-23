@@ -57,6 +57,27 @@ def generate_expire_tasks():
         sms_message_rule.delay(message.id)
 
 
+@za_celery.task
+def generate_retrieve_tasks():
+    """Generate refresh tasks for SMS message cost scheduling."""
+
+    # fetch candidate calls
+    messages = (
+        biz.g.session.query(SMSMessage)
+        .filter(
+            SMSMessage.state.in_([
+                SMSMessageState.FINAL_DELIVERED.name,
+                SMSMessageState.FINAL_UNCONFIRMED.name]))
+        .all())
+
+    logger.info("retrieved %i candidate messages", len(messages))
+
+    # generate associated asynchronous calls
+    for message in messages:
+        sms_message_rule = RetrieveSMSMessageRule()
+        sms_message_rule.delay(message.id)
+
+
 class SendSMSMessageRule(biz.tasks.Rule):
     """ECA rule: send SMS messages when scheduled."""
 
@@ -100,6 +121,8 @@ class SendSMSMessageRule(biz.tasks.Rule):
             message.route_message_key = route_info["route_message_key"]
             message.sent_when = times.now()
             message.update(state=route_info["state"], force_report=False)
+            retrieve_sms_cost_rule = RetrieveSMSMessageRule()
+            retrieve_sms_cost_rule.delay(message.id)
 
         biz.g.session.flush()
 
@@ -130,3 +153,39 @@ class ExpireSMSMessageRule(biz.tasks.Rule):
             SMSMessageState.IN_TRANSIT.name: SMSMessageState.FINAL_UNCONFIRMED}
 
         message.update(state=expiration_states[message.state])
+
+
+class RetrieveSMSMessageRule(biz.tasks.Rule):
+    """ECA rule: retrieve SMS message costs when scheduled."""
+
+    # XXX avoid multiple handlers executing the same call
+
+    def __init__(self, router=None):
+        if router is None:
+            router = za.sms.get_default_router()
+
+        self._router = router
+
+    def check(self, message):
+        return (
+            message.cost_value == None)
+
+    def execute(self, message):
+        try:
+            message_sid = message.route_message_key
+
+            logger.info(
+                "retrieving SMS message cost of sid: %s",
+                message_sid)
+            msg_w_cost_info = self._router.get_sms_cost(
+                message_sid)
+        except:
+            logger.exception("error while retrieving SMS")
+        else:
+            logger.info("retrieved SMS cost; cost info: %s", msg_w_cost_info)
+
+            message.cost_value = msg_w_cost_info.price
+            message.cost_currency = msg_w_cost_info.price_unit
+            message.update(state=SMSMessageState.FINAL_UNCONFIRMED, force_report=False)
+
+        biz.g.session.flush()

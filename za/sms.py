@@ -85,6 +85,27 @@ class TwilioSMSRouter(SMSRouter):
             "route_key": "twilio",
             "route_message_key": message.sid}
 
+    def get_sms_cost(self, sms_sid):
+        """Get cost of a single SMS message."""
+
+        logger.debug("getting cost of SMS message of %s from Twilio", sms_sid)
+
+        client = twilio.rest.TwilioRestClient(
+            self._account_sid,
+            self._auth_token)
+
+        try:
+            message = client.messages.get(sms_sid)
+        except twilio.TwilioRestException as error:
+            if error.msg.strip().startswith("21614:"):
+                raise ValueError("not a valid mobile number")
+            else:
+                raise
+
+        logger.info("twilio message retrieved: %r", message)
+
+        return message
+
 
 class SequentialSMSRouter(SMSRouter):
     """Route SMS messages by sequential condition-matching.
@@ -103,6 +124,7 @@ class SequentialSMSRouter(SMSRouter):
         """
 
         self._routes = routes
+        logger.debug("SequentialRouter: self._routes: %s", self._routes)
 
     def send_sms(self, recipient, body):
         """Route a single SMS message."""
@@ -121,15 +143,41 @@ class SequentialSMSRouter(SMSRouter):
 
         raise RuntimeError("no matching route for SMS recipient")
 
+    def get_sms_cost(self, sms_sid):
+        """Route a single SMS message's cost retrieval."""
+
+        if sms_sid is None:
+            raise ValueError("no sms_sid provided")
+
+        for (condition, router) in self._routes:
+
+            if self._cost_route_matches(condition, sms_sid):
+                logger.debug(
+                    "routing message of sid %s through %s",
+                    sms_sid,
+                    router)
+
+                return router.get_sms_cost(sms_sid)
+
+        raise RuntimeError("no matching route for SMS sms_sid")
+    
     def _route_matches(self, condition, recipient):
         """Return `True` iff the recipient meets the specified condition."""
-
         if condition is None:
             return True
         elif isinstance(condition, basestring):
             return recipient.startswith(condition)
         elif callable(condition):
             return condition(recipient)
+
+    def _cost_route_matches(self, condition, sms_sid):
+        """Return `True` iff the sms_sid meets the specified condition."""
+        logger.debug("SequentialRouter: _cost_route_matches: %s, %s, %s",
+            self, condition, sms_sid)
+        if condition is None:
+            return True
+        elif callable(condition):
+            return condition(sms_sid)
 
 
 def get_default_router():
