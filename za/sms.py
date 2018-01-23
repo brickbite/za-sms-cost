@@ -130,6 +130,7 @@ class SequentialSMSRouter(SMSRouter):
         """
 
         self._routes = routes
+        logger.debug("SequentialRouter: self._routes: %s", self._routes)
 
     def send_sms(self, recipient, body):
         """Route a single SMS message."""
@@ -147,7 +148,7 @@ class SequentialSMSRouter(SMSRouter):
                 return router.send_sms(recipient, body)
 
         raise RuntimeError("no matching route for SMS recipient")
-
+    
     def _route_matches(self, condition, recipient):
         """Return `True` iff the recipient meets the specified condition."""
 
