@@ -493,7 +493,7 @@ class SMSMessage(biz.DomainBase):
     recipient = sa.Column(sa.String, nullable=False)
     body = sa.Column(sa.UnicodeText, nullable=False)
     ############ ADDING for cost
-    cost_value = sa.Column(sa.Numeric)
+    cost_value = sa.Column(sa.String)
     cost_currency = sa.Column(sa.String)
     ############
     template_name = sa.Column(sa.String)
