@@ -170,9 +170,10 @@ class RetrieveSMSMessageRule(biz.tasks.Rule):
     def check(self, message):
         logger.debug("RetrieveSMS: check: %s", message.cost_value)
         logger.debug("RetrieveSMS: check: message is: %s", message)
+        logger.debug("RetrieveSMS: self is: %s", self)
         return (
             ### TODO: change True to an actual check
-            True)
+            message.cost_value == None)
 
     def execute(self, message):
         try:
