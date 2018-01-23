@@ -601,14 +601,11 @@ class SMSMessageMedia(object):
             "id": self.sms_message.id,
             "recipient": self.sms_message.recipient,
             "body": self.sms_message.body,
-            ############ ADDING for cost
             "cost": {
                 "_type": "decimal",
                 "value": self.sms_message.cost_value
             },
             "cost_currency": self.sms_message.cost_currency,
-            "route_message_key": self.sms_message.route_message_key,
-            ############
             "created_when": self.sms_message.created_when,
             "sent_when": self.sms_message.sent_when,
             "state": self.sms_message.state,

@@ -165,15 +165,9 @@ class RetrieveSMSMessageRule(biz.tasks.Rule):
             router = za.sms.get_default_router()
 
         self._router = router
-        logger.debug("RetrieveSMS: router is: %s", self._router)
 
     def check(self, message):
-        logger.debug("RetrieveSMS: router is: %s", self._router)
-        logger.debug("RetrieveSMS: check: %s", message.cost_value)
-        logger.debug("RetrieveSMS: check: message is: %s", message)
-        logger.debug("RetrieveSMS: self is: %s", self)
         return (
-            ### TODO: change True to an actual check
             message.cost_value == None)
 
     def execute(self, message):
@@ -187,8 +181,6 @@ class RetrieveSMSMessageRule(biz.tasks.Rule):
                 message_sid)
         except:
             logger.exception("error while retrieving SMS")
-
-            # message.update(state=SMSMessageState.FINAL_FAILED)
         else:
             logger.info("retrieved SMS cost; cost info: %s", msg_w_cost_info)
 

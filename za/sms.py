@@ -88,23 +88,21 @@ class TwilioSMSRouter(SMSRouter):
     def get_sms_cost(self, sms_sid):
         """Get cost of a single SMS message."""
 
-        logger.debug("==== get_sms_cost: getting cost of SMS message of %s from Twilio", sms_sid)
+        logger.debug("getting cost of SMS message of %s from Twilio", sms_sid)
 
         client = twilio.rest.TwilioRestClient(
             self._account_sid,
             self._auth_token)
 
         try:
-            logger.debug("==== client.messages: %s", client.messages)
             message = client.messages.get(sms_sid)
         except twilio.TwilioRestException as error:
-            logger.debug("==== error: %s", error)
             if error.msg.strip().startswith("21614:"):
                 raise ValueError("not a valid mobile number")
             else:
                 raise
 
-        logger.info("==== get_sms_cost: twilio message: %r", message)
+        logger.info("twilio message retrieved: %r", message)
 
         return message
 
@@ -147,18 +145,15 @@ class SequentialSMSRouter(SMSRouter):
 
     def get_sms_cost(self, sms_sid):
         """Route a single SMS message's cost retrieval."""
-        logger.debug("SequentialRouter: get_sms_cost: self._routes is: %s",
-            self._routes)
 
         if sms_sid is None:
             raise ValueError("no sms_sid provided")
 
         for (condition, router) in self._routes:
-            logger.debug("SequentialRouter: (condition, router) in self._routes: %s",
-                (condition, router))
+
             if self._cost_route_matches(condition, sms_sid):
                 logger.debug(
-                    "routing message to %s through %s",
+                    "routing message of sid %s through %s",
                     sms_sid,
                     router)
 

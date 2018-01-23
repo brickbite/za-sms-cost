@@ -492,10 +492,8 @@ class SMSMessage(biz.DomainBase):
     route_message_status = sa.Column(sa.String)
     recipient = sa.Column(sa.String, nullable=False)
     body = sa.Column(sa.UnicodeText, nullable=False)
-    ############ ADDING for cost
     cost_value = sa.Column(sa.String)
     cost_currency = sa.Column(sa.String)
-    ############
     template_name = sa.Column(sa.String)
     payment_id = sa.Column(sa.Integer, sa.ForeignKey("payments.id"))
     payment = sa.orm.relationship(
