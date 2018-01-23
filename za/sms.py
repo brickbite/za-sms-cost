@@ -95,11 +95,11 @@ class TwilioSMSRouter(SMSRouter):
             self._auth_token)
 
         try:
-            message = client.messages(sms_sid).fetch()
+            logger.debug("==== client.messages: %s", client.msg)
+            logger.debug("==== client.messages: %s", client.messages)
+            message = client.msg(sms_sid).fetch()
         except twilio.TwilioRestException as error:
-            # If Twilio returns an HTTP response error, this means that
-            # Twilio is unable to process your request and thus you will
-            # not be charged - http://bit.ly/1NgPf2c
+            logger.debug("==== error: %s", error)
             if error.msg.strip().startswith("21614:"):
                 raise ValueError("not a valid mobile number")
             else:
