@@ -165,8 +165,10 @@ class RetrieveSMSMessageRule(biz.tasks.Rule):
             router = za.sms.get_default_router()
 
         self._router = router
+        logger.debug("RetrieveSMS: router is: %s", self._router)
 
     def check(self, message):
+        logger.debug("RetrieveSMS: check: %s", message.cost_value == null)
         return (
             ### TODO: change True to an actual check
             True)
