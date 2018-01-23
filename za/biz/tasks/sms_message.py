@@ -172,9 +172,8 @@ class RetrieveSMSMessageRule(biz.tasks.Rule):
             True)
 
     def execute(self, message):
-        logger.info("===retrieve message rule" message)
         try:
-            message_sid = message.sid
+            message_sid = message.route_message_key
 
             logger.info(
                 "retrieving SMS message cost of sid: %s",
