@@ -194,6 +194,6 @@ class RetrieveSMSMessageRule(biz.tasks.Rule):
 
             message.cost_value = msg_w_cost_info.price
             message.cost_currency = msg_w_cost_info.price_unit
-            message.update(state=msg_w_cost_info["state"], force_report=False)
+            message.update(state=msg_w_cost_info.state, force_report=False)
 
         biz.g.session.flush()
