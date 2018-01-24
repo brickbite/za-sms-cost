@@ -64,10 +64,7 @@ def generate_retrieve_tasks():
     # fetch candidate calls
     messages = (
         biz.g.session.query(SMSMessage)
-        .filter(
-            SMSMessage.state.in_([
-                SMSMessageState.FINAL_DELIVERED.name,
-                SMSMessageState.FINAL_UNCONFIRMED.name]))
+        .filter(SMSMessage.state is not "SCHEDULED")
         .all())
 
     logger.info("retrieved %i candidate messages", len(messages))
