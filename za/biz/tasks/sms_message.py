@@ -121,8 +121,6 @@ class SendSMSMessageRule(biz.tasks.Rule):
             message.route_message_key = route_info["route_message_key"]
             message.sent_when = times.now()
             message.update(state=route_info["state"], force_report=False)
-            retrieve_sms_cost_rule = RetrieveSMSMessageRule()
-            retrieve_sms_cost_rule.delay(message.id)
 
         biz.g.session.flush()
 
