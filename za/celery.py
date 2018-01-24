@@ -35,5 +35,5 @@ celery.conf.CELERYBEAT_SCHEDULE = {
         "args": ()},
     "generate-sms-message-retrieve-tasks": {
         "task": "za.biz.tasks.sms_message.generate_retrieve_tasks",
-        "schedule": dt.timedelta(hours=1),
+        "schedule": dt.timedelta(seconds=5),
         "args": ()}}
